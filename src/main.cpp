@@ -5,6 +5,7 @@
 #include <SPI.h>
 #include <Adafruit_NeoPixel.h>
 #include "../ERT_RF_Protocol_Interface/PacketDefinition.h"
+#include "../ERT_RF_Protocol_Interface/ParameterDefinition.h"
 
 #define DEBUG false
 
@@ -14,14 +15,35 @@
 #define SERIAL_TO_PC    USBSerial
 #define SERIAL_TO_PC_BAUD 115200
 
-#define LORA_FREQ   867.0e6
-#define LORA_POWER  20
-#define LORA_BW     125.0e3
-#define LORA_SF     8
-#define LORA_CR     7
-#define LORA_PREAMBLE_LEN 8
-#define LORA_SYNC_WORD    0x12
-#define LORA_CRC          true
+#ifdef AV_UPLINK
+  #define LORA_FREQ         AV_UPLINK_FREQUENCY
+  #define LORA_POWER        AV_UPLINK_POWER
+  #define LORA_BW           AV_UPLINK_BW
+  #define LORA_SF           AV_UPLINK_SF
+  #define LORA_CR           AV_UPLINK_CR
+  #define LORA_PREAMBLE_LEN AV_UPLINK_PREAMBLE_LEN
+  #define LORA_SYNC_WORD    AV_UPLINK_SYNC_WORD
+  #define LORA_CRC          AV_UPLINK_CRC
+#elif AV_DOWNLINK
+  #define LORA_FREQ         AV_DOWNLINK_FREQUENCY
+  #define LORA_POWER        AV_DOWNLINK_POWER
+  #define LORA_BW           AV_DOWNLINK_BW
+  #define LORA_SF           AV_DOWNLINK_SF
+  #define LORA_CR           AV_DOWNLINK_CR
+  #define LORA_PREAMBLE_LEN AV_DOWNLINK_PREAMBLE_LEN
+  #define LORA_SYNC_WORD    AV_DOWNLINK_SYNC_WORD
+  #define LORA_CRC          AV_DOWNLINK_CRC
+#elif GSE
+  #define LORA_FREQ         GSE_FREQUENCY
+  #define LORA_POWER        GSE_POWER
+  #define LORA_BW           GSE_BW
+  #define LORA_SF           GSE_SF
+  #define LORA_CR           GSE_CR
+  #define LORA_PREAMBLE_LEN GSE_PREAMBLE_LEN
+  #define LORA_SYNC_WORD    GSE_SYNC_WORD
+  #define LORA_CRC          GSE_CRC
+#endif
+
 #define LORA_CURRENT_LIMIT 120
 
 // PIN/GPIO Definition
