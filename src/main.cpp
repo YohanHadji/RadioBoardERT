@@ -4,7 +4,7 @@
 #include <LoRa.h>
 #include <SPI.h>
 #include <Adafruit_NeoPixel.h>
-#include "packetInterface.h"
+#include "../ERT_RF_Protocol_Interface/PacketDefinition.h"
 
 #define DEBUG false
 
@@ -58,12 +58,9 @@ CapsuleStatic UartCapsule(handleUartCapsule);
 void setup() {
   SERIAL_TO_PC.begin(SERIAL_TO_PC_BAUD);
   SERIAL_TO_PC.setTxTimeoutMs(0);
-  //delay(2000);
-  // SERIAL_TO_PC.println("Starting...");
 
   // put your setup code here, to run once:
   UART_PORT.begin(UART_BAUD, 134217756U, 6, 5); // This for radioboard
-
   //UART_PORT.begin(UART_BAUD, 134217756U, 9, 46); // This for cmdIn
 
   led.begin();
@@ -84,11 +81,9 @@ void setup() {
   LoRa.setSpreadingFactor(LORA_SF);
   LoRa.setSignalBandwidth(LORA_BW);
   LoRa.setCodingRate4(LORA_CR);
-
   //LoRa.setPreambleLength(LORA_PREAMBLE_LEN);
   //LoRa.setSyncWord(LORA_SYNC_WORD);
   //LoRa.enableCrc();
-
   LoRa.setTxPower(LORA_POWER);
   //LoRa.setOCP(LORA_CURRENT_LIMIT);
   LoRa.onReceive(handlePacketLoRa);
@@ -112,38 +107,16 @@ void handlePacketLoRa(int packetSize) {
 }
 
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
-  switch (packetId) {
-    case CAPSULE_ID::AIR_TO_GROUND:
-    {
-      // SERIAL_TO_PC.println("Packet with ID 00 received : ");
-      uint8_t* packetToSend = UartCapsule.encode(CAPSULE_ID::DEVICE_TO_MOTHER,dataIn,len);
-      UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
-      delete[] packetToSend;
-
-      uint32_t ledColor = colors[random(0,8)];
-      led.fill(ledColor);
-      led.show();
-    }
-    break;
-    default:
-    break;
-  }
+  uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
+  UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
+  delete[] packetToSend;
 }
 
 void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
-  switch (packetId) {
-    case CAPSULE_ID::MOTHER_TO_DEVICE:
-    {
-      // SERIAL_TO_PC.println("Packet with ID 00 received : ");
-      uint8_t* packetToSend = LoRaCapsule.encode(CAPSULE_ID::GROUND_TO_AIR,dataIn,len);
-      LoRa.beginPacket();
-      LoRa.write(packetToSend,LoRaCapsule.getCodedLen(len));
-      LoRa.endPacket();
-      LoRa.receive();
-      delete[] packetToSend;
-    }
-    break;
-    default:
-    break;
-  }
+  uint8_t* packetToSend = LoRaCapsule.encode(packetId,dataIn,len);
+  LoRa.beginPacket();
+  LoRa.write(packetToSend,LoRaCapsule.getCodedLen(len));
+  LoRa.endPacket();
+  LoRa.receive();
+  delete[] packetToSend;
 }
