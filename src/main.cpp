@@ -83,6 +83,10 @@ void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
   UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
   delete[] packetToSend;
+
+  uint32_t ledColor = colors[random(0,8)];
+  led.fill(ledColor);
+  led.show();
 }
 
 void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
@@ -92,4 +96,8 @@ void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   LoRa.endPacket();
   LoRa.receive();
   delete[] packetToSend;
+
+  uint32_t ledColor = colors[random(0,8)];
+  led.fill(ledColor);
+  led.show();
 }
