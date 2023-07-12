@@ -9,14 +9,15 @@
 #include "config.h"
 
 uint32_t colors[] = {
-    0x32A8A0,
-    0x0000FF,
-    0xFFEA00,
-    0x00FF00,
-    0xFF0000,
-    0xCF067C,
-    0xFF0800
+  0xFF0000, // Red
+  0x00FF00, // Green
+  0x0000FF, // Blue
+  0x32A8A0, // Cyan
+  0xFFEA00, // Yellow
+  0xCF067C, // Purple
+  0xFF0800  // Orange
 }; 
+
 
 void handlePacketLoRa(int packetSize);
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
@@ -36,8 +37,7 @@ void setup() {
   //UART_PORT.begin(UART_BAUD, 134217756U, 9, 46); // This for cmdIn
 
   led.begin();
-  uint32_t ledColor = colors[random(0,7)];
-  led.fill(ledColor);
+  led.fill(colors[INITIAL_LED_COLOR]);
   led.show();
 
   SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_CS); 
@@ -79,16 +79,25 @@ void handlePacketLoRa(int packetSize) {
 }
 
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
+
+  uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
+  led.fill(ledColor);
+  led.show();
+
   uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
   UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
   delete[] packetToSend;
 
-  uint32_t ledColor = colors[random(0,7)];
-  led.fill(ledColor);
+  delay(10);
+  led.fill(colors[INITIAL_LED_COLOR]);
   led.show();
 }
 
 void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
+  uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
+  led.fill(ledColor);
+  led.show();
+
   uint8_t* packetToSend = LoRaCapsule.encode(packetId,dataIn,len);
   LoRa.beginPacket();
   LoRa.write(packetToSend,LoRaCapsule.getCodedLen(len));
@@ -96,7 +105,6 @@ void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   LoRa.receive();
   delete[] packetToSend;
 
-  uint32_t ledColor = colors[random(0,7)];
-  led.fill(ledColor);
+  led.fill(colors[INITIAL_LED_COLOR]);
   led.show();
 }
