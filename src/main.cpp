@@ -9,7 +9,6 @@
 #include "config.h"
 
 uint32_t colors[] = {
-    0x000000,
     0x32A8A0,
     0x0000FF,
     0xFFEA00,
@@ -37,7 +36,7 @@ void setup() {
   //UART_PORT.begin(UART_BAUD, 134217756U, 9, 46); // This for cmdIn
 
   led.begin();
-  uint32_t ledColor = colors[random(0,8)];
+  uint32_t ledColor = colors[random(0,7)];
   led.fill(ledColor);
   led.show();
 
@@ -84,7 +83,7 @@ void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
   delete[] packetToSend;
 
-  uint32_t ledColor = colors[random(0,8)];
+  uint32_t ledColor = colors[random(0,7)];
   led.fill(ledColor);
   led.show();
 }
@@ -97,7 +96,7 @@ void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
   LoRa.receive();
   delete[] packetToSend;
 
-  uint32_t ledColor = colors[random(0,8)];
+  uint32_t ledColor = colors[random(0,7)];
   led.fill(ledColor);
   led.show();
 }
