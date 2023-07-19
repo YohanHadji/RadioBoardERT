@@ -18,7 +18,6 @@ uint32_t colors[] = {
   0xFF0800  // Orange
 }; 
 
-
 void handlePacketLoRa(int packetSize);
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
 void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len);
