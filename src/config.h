@@ -1,12 +1,24 @@
-#define DEBUG false
+#define DEBUG 				false
 
-#define UART_PORT Serial1
-#define UART_BAUD 115200
+#define UART_PORT   		Serial1
+#define UART_BAUD   		115200
 
-#define SERIAL_TO_PC    USBSerial
-#define SERIAL_TO_PC_BAUD 115200
+#define SERIAL_TO_PC        USBSerial
+#define SERIAL_TO_PC_BAUD   115200		// baudrate not considered as USB speed
 
 #define SEND_TO_DB true 
+
+// PIN/GPIO Definition on Radio Module ERT
+
+#define LORA_SCK                42
+#define LORA_MOSI               44
+#define LORA_MISO               43
+#define LORA_CS                 41
+#define LORA_INT0               21
+#define LORA_INT5               39
+#define LORA_RST                -1
+
+#define NEOPIXEL_PIN            18
 
 #ifdef UPLINK
   #define LORA_FREQ         UPLINK_FREQUENCY
@@ -50,14 +62,3 @@
 #endif
 
 #define LORA_CURRENT_LIMIT 120
-
-// PIN/GPIO Definition
-#define LORA_SCK                42
-#define LORA_MOSI               44
-#define LORA_MISO               43
-#define LORA_CS                 41
-#define LORA_INT0               21
-#define LORA_INT5               39
-#define LORA_RST                -1
-
-#define NEOPIXEL_PIN            18
