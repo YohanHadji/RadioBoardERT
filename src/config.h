@@ -6,6 +6,8 @@
 #define SERIAL_TO_PC    USBSerial
 #define SERIAL_TO_PC_BAUD 115200
 
+#define SEND_TO_DB true 
+
 #ifdef UPLINK
   #define LORA_FREQ         UPLINK_FREQUENCY
   #define LORA_POWER        UPLINK_POWER
@@ -17,6 +19,8 @@
   #define LORA_CRC          UPLINK_CRC
 
   #define INITIAL_LED_COLOR 0
+
+  #define RADIOMODULE_NAME "UPLINK"
 #elif AV_DOWNLINK
   #define LORA_FREQ         AV_DOWNLINK_FREQUENCY
   #define LORA_POWER        AV_DOWNLINK_POWER
@@ -28,6 +32,8 @@
   #define LORA_CRC          AV_DOWNLINK_CRC
 
   #define INITIAL_LED_COLOR 1
+
+  #define RADIMODULE_NAME "AV_DOWNLINK_1"
 #elif GSE_DOWNLINK
   #define LORA_FREQ         GSE_DOWNLINK_FREQUENCY
   #define LORA_POWER        GSE_DOWNLINK_POWER
@@ -39,6 +45,8 @@
   #define LORA_CRC          GSE_DOWNLINK_CRC
 
   #define INITIAL_LED_COLOR 2
+
+  #define RADIOMODULE_NAME "GSE_DOWNLINK"
 #endif
 
 #define LORA_CURRENT_LIMIT 120
