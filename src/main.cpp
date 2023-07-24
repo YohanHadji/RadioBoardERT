@@ -1,22 +1,23 @@
-#include <Arduino.h>
-#include <Capsule.h>  
-#include <LoopbackStream.h>
-#include <LoRa.h>
-#include <SPI.h>
 #include <Adafruit_NeoPixel.h>
+#include <Arduino.h>
+#include <Capsule.h>
+#include <LoRa.h>
+#include <LoopbackStream.h>
+#include <SPI.h>
+
 #include "../ERT_RF_Protocol_Interface/PacketDefinition.h"
 #include "../ERT_RF_Protocol_Interface/ParameterDefinition.h"
 #include "config.h"
 
 uint32_t colors[] = {
-  0xFF0000, // Red
-  0x00FF00, // Green
-  0x0000FF, // Blue
-  0x32A8A0, // Cyan
-  0xFFEA00, // Yellow
-  0xCF067C, // Purple
-  0xFF0800  // Orange
-}; 
+    0xFF0000,  // Red
+    0x00FF00,  // Green
+    0x0000FF,  // Blue
+    0x32A8A0,  // Cyan
+    0xFFEA00,  // Yellow
+    0xCF067C,  // Purple
+    0xFF0800   // Orange
+};
 
 void handlePacketLoRa(int packetSize);
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len); 
@@ -28,82 +29,93 @@ CapsuleStatic LoRaCapsule(handleLoRaCapsule);
 CapsuleStatic UartCapsule(handleUartCapsule);
 
 void setup() {
-  SERIAL_TO_PC.begin(SERIAL_TO_PC_BAUD);
-  SERIAL_TO_PC.setTxTimeoutMs(0);
+    SERIAL_TO_PC.begin(SERIAL_TO_PC_BAUD);
+    SERIAL_TO_PC.setTxTimeoutMs(0);
 
-  // put your setup code here, to run once:
-  UART_PORT.begin(UART_BAUD, 134217756U, 6, 5); // This for radioboard
-  //UART_PORT.begin(UART_BAUD, 134217756U, 9, 46); // This for cmdIn
+    // put your setup code here, to run once:
+    UART_PORT.begin(UART_BAUD, 134217756U, 6, 5); // This for radioboard
+    //UART_PORT.begin(UART_BAUD, 134217756U, 9, 46); // This for cmdIn
 
-  led.begin();
-  led.fill(colors[INITIAL_LED_COLOR]);
-  led.show();
+    led.begin();
+    led.fill(colors[INITIAL_LED_COLOR]);
+    led.show();
 
-  SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_CS); 
-  LoRa.setPins(LORA_CS, LORA_RST, LORA_INT0);
-  LoRa.setSPI(SPI);
-  
-  if (!LoRa.begin(LORA_FREQ)) {
-    if (DEBUG) {
-      SERIAL_TO_PC.println("Starting LoRa failed!");
+    SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_CS); 
+    LoRa.setPins(LORA_CS, LORA_RST, LORA_INT0);
+    LoRa.setSPI(SPI);
+    
+    if (!LoRa.begin(LORA_FREQ)) {
+      if (DEBUG) {
+        SERIAL_TO_PC.println("Starting LoRa failed!");
+      }
     }
-  }
 
-  LoRa.setSpreadingFactor(LORA_SF);
-  LoRa.setSignalBandwidth(LORA_BW);
-  LoRa.setCodingRate4(LORA_CR);
-  //LoRa.setPreambleLength(LORA_PREAMBLE_LEN);
-  //LoRa.setSyncWord(LORA_SYNC_WORD);
-  //LoRa.enableCrc();
-  LoRa.setTxPower(LORA_POWER);
-  //LoRa.setOCP(LORA_CURRENT_LIMIT);
-  LoRa.onReceive(handlePacketLoRa);
-  LoRa.receive(); 
+    // Set LoRa parameters
+    LoRa.setTxPower(LORA_POWER);
+    LoRa.setSpreadingFactor(LORA_SF);
+    LoRa.setSignalBandwidth(LORA_BW);
+    LoRa.setCodingRate4(LORA_CR);
+    LoRa.setPreambleLength(LORA_PREAMBLE_LEN);
+#if (LORA_CRC)
+    LoRa.enableCrc();  // not necessary to work with miaou, even if miaou enbale it...:-|
+#else
+    LoRa.disableCrc();
+#endif
+#if (LORA_INVERSE_IQ)
+    LoRa.enableInvertIQ();
+#else
+    LoRa.disableInvertIQ();
+#endif
+    LoRa.onReceive(handlePacketLoRa);
+    LoRa.receive(); 
 }
 
 void loop() {
-  while (LoRaRxBuffer.available()) {
-    LoRaCapsule.decode(LoRaRxBuffer.read());
-  }
+    while (LoRaRxBuffer.available()) {
+        // char x = LoRaRxBuffer.read();
+        // LoRaCapsule.decode(x);
+        // USBSerial.println(x);
+        LoRaCapsule.decode(LoRaRxBuffer.read());
+    }
 
-  while (UART_PORT.available()) {
-    UartCapsule.decode(UART_PORT.read());
-  }
+    while (UART_PORT.available()) {
+        UartCapsule.decode(UART_PORT.read());
+    }
 }
 
 void handlePacketLoRa(int packetSize) {
-  for (int i = 0; i < packetSize; i++) {
-    LoRaRxBuffer.write(LoRa.read());
-  }
+    for (int i = 0; i < packetSize; i++) {
+        LoRaRxBuffer.write(LoRa.read());
+    }
 }
 
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 
-  uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
-  led.fill(ledColor);
-  led.show();
+    uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
+    led.fill(ledColor);
+    led.show();
 
-  uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
-  UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
-  delete[] packetToSend;
+    uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
+    UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
+    delete[] packetToSend;
 
-  delay(10);
-  led.fill(colors[INITIAL_LED_COLOR]);
-  led.show();
+    delay(10);
+    led.fill(colors[INITIAL_LED_COLOR]);
+    led.show();
 }
 
 void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
-  uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
-  led.fill(ledColor);
-  led.show();
+    uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
+    led.fill(ledColor);
+    led.show();
 
-  uint8_t* packetToSend = LoRaCapsule.encode(packetId,dataIn,len);
-  LoRa.beginPacket();
-  LoRa.write(packetToSend,LoRaCapsule.getCodedLen(len));
-  LoRa.endPacket();
-  LoRa.receive();
-  delete[] packetToSend;
+    uint8_t* packetToSend = LoRaCapsule.encode(packetId,dataIn,len);
+    LoRa.beginPacket();
+    LoRa.write(packetToSend,LoRaCapsule.getCodedLen(len));
+    LoRa.endPacket();
+    LoRa.receive();
+    delete[] packetToSend;
 
-  led.fill(colors[INITIAL_LED_COLOR]);
-  led.show();
+    led.fill(colors[INITIAL_LED_COLOR]);
+    led.show();
 }
