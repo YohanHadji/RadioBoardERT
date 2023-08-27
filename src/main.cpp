@@ -124,14 +124,13 @@ void handlePacketLoRa(int packetSize) {
 }
 
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
-
     uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
     led.fill(ledColor);
     led.show();
 
-  uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
-  UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
-  delete[] packetToSend;
+    uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
+    UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
+    delete[] packetToSend;
 
     delay(10);
     led.fill(colors[INITIAL_LED_COLOR]);
@@ -155,7 +154,7 @@ void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
 }
 
 #if SEND_TO_DB
-  void setupInfluxDb() {
+    void setupInfluxDb() {
     // Connect WiFi
     SERIAL_TO_PC.println("Connecting to WiFi");
     WiFi.mode(WIFI_STA);
