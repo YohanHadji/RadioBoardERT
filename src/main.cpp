@@ -45,9 +45,9 @@ void setup() {
     LoRa.setSPI(SPI);
     
     if (!LoRa.begin(LORA_FREQ)) {
-      if (DEBUG) {
-        SERIAL_TO_PC.println("Starting LoRa failed!");
-      }
+        if (DEBUG) {
+            SERIAL_TO_PC.println("Starting LoRa failed!");
+        }
     }
 
     // Set LoRa parameters
@@ -81,6 +81,18 @@ void loop() {
     while (UART_PORT.available()) {
         UartCapsule.decode(UART_PORT.read());
     }
+
+    // static uint32_t t = 0;
+    // if (millis() - t > 4000) {
+    //     t = millis();
+    //     uint8_t x[] = {1,2,3,4,5,6,7};
+    //     uint8_t *packetToSend = LoRaCapsule.encode(0x12, x, sizeof(x));
+    //     LoRa.beginPacket();
+    //     LoRa.write(packetToSend, LoRaCapsule.getCodedLen(sizeof(x)));
+    //     LoRa.endPacket();
+    //     LoRa.receive();
+    //     delete[] packetToSend;
+    // }
 }
 
 void handlePacketLoRa(int packetSize) {
