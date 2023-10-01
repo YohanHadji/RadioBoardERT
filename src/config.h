@@ -12,7 +12,7 @@
 #define SERIAL_TO_PC        USBSerial
 #define SERIAL_TO_PC_BAUD   115200		// baudrate not considered as USB speed
 
-#define SEND_TO_DB false 
+#define SEND_TO_DB      false
 
 // PIN/GPIO Definition on Radio Module ERT
 

@@ -42,6 +42,9 @@
   void setupInfluxDb();
 #endif 
 
+#define LED_COLOR_TIME 100 // Color of the led will be changed for x ms each time a packet is received
+static unsigned long lastPacketReceived = 0;
+
 
 uint32_t colors[] = {
     0xFF0000,  // Red
@@ -119,6 +122,11 @@ void loop() {
         UartCapsule.decode(UART_PORT.read());
     }
 
+    if ((millis()-lastPacketReceived)>LED_COLOR_TIME) {
+        led.fill(colors[INITIAL_LED_COLOR]);
+        led.show();
+    }
+
     // static uint32_t t = 0;
     // if (millis() - t > 4000) {
     //     t = millis();
@@ -139,6 +147,7 @@ void handlePacketLoRa(int packetSize) {
 }
 
 void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
+    lastPacketReceived = millis();
     uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
     led.fill(ledColor);
     led.show();
@@ -146,13 +155,10 @@ void handleLoRaCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
     uint8_t* packetToSend = UartCapsule.encode(packetId,dataIn,len);
     UART_PORT.write(packetToSend,UartCapsule.getCodedLen(len));
     delete[] packetToSend;
-
-    delay(10);
-    led.fill(colors[INITIAL_LED_COLOR]);
-    led.show();
 }
 
 void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
+    lastPacketReceived = millis();
     uint32_t ledColor = colors[INITIAL_LED_COLOR+1];
     led.fill(ledColor);
     led.show();
@@ -163,9 +169,6 @@ void handleUartCapsule(uint8_t packetId, uint8_t *dataIn, uint32_t len) {
     LoRa.endPacket();
     LoRa.receive();
     delete[] packetToSend;
-
-    led.fill(colors[INITIAL_LED_COLOR]);
-    led.show();
 }
 
 #if SEND_TO_DB
