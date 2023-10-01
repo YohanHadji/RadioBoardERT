@@ -67,8 +67,10 @@ void setup() {
     SERIAL_TO_PC.setTxTimeoutMs(0);
 
     // put your setup code here, to run once:
+#if !MODE_STANDALONE
     UART_PORT.begin(UART_BAUD, 134217756U, 6, 5); // This for radioboard
     //UART_PORT.begin(UART_BAUD, 134217756U, 9, 46); // This for cmdIn
+#endif
 
     led.begin();
     led.fill(colors[INITIAL_LED_COLOR]);
@@ -109,6 +111,7 @@ void loop() {
         // char x = LoRaRxBuffer.read();
         // LoRaCapsule.decode(x);
         // USBSerial.println(x);
+        // USBSerial.print("m");
         LoRaCapsule.decode(LoRaRxBuffer.read());
     }
 

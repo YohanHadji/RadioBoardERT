@@ -1,12 +1,18 @@
 #define DEBUG 				false
 
+#define MODE_STANDALONE   false  // otherwise, connected to motherboard
+
+#if MODE_STANDALONE
+#define UART_PORT   		USBSerial
+#else
 #define UART_PORT   		Serial1
+#endif
 #define UART_BAUD   		115200
 
 #define SERIAL_TO_PC        USBSerial
 #define SERIAL_TO_PC_BAUD   115200		// baudrate not considered as USB speed
 
-#define SEND_TO_DB true 
+#define SEND_TO_DB false 
 
 // PIN/GPIO Definition on Radio Module ERT
 
@@ -29,6 +35,7 @@
   #define LORA_PREAMBLE_LEN UPLINK_PREAMBLE_LEN
   #define LORA_SYNC_WORD    UPLINK_SYNC_WORD
   #define LORA_CRC          UPLINK_CRC
+  #define LORA_INVERSE_IQ   UPLINK_INVERSE_IQ
 
   #define INITIAL_LED_COLOR 0
 
@@ -42,6 +49,7 @@
   #define LORA_PREAMBLE_LEN AV_DOWNLINK_PREAMBLE_LEN
   #define LORA_SYNC_WORD    AV_DOWNLINK_SYNC_WORD
   #define LORA_CRC          AV_DOWNLINK_CRC
+  #define LORA_INVERSE_IQ   AV_DOWNLINK_INVERSE_IQ
 
   #define INITIAL_LED_COLOR 1
 
@@ -55,6 +63,7 @@
   #define LORA_PREAMBLE_LEN GSE_DOWNLINK_PREAMBLE_LEN
   #define LORA_SYNC_WORD    GSE_DOWNLINK_SYNC_WORD
   #define LORA_CRC          GSE_DOWNLINK_CRC
+  #define LORA_INVERSE_IQ   GSE_DOWNLINK_INVERSE_IQ
 
   #define INITIAL_LED_COLOR 2
 
